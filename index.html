@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Fuel Station Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="description" content="Find the nearest and cheapest fuel stations around your location.">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar containing controls and list -->
+        <aside class="sidebar">
+            <header class="sidebar-header">
+                <h1><i class="fa-solid fa-gas-pump"></i> FuelFinder</h1>
+                <p>Find the best fuel deals near you.</p>
+            </header>
+
+            <div class="controls-panel">
+                <div class="location-controls">
+                    <button id="btn-detect-location" class="btn-primary" aria-label="Detect my location">
+                        <i class="fa-solid fa-location-crosshairs"></i> Current Location
+                    </button>
+                    <!-- Fallback or mock trigger if location fails -->
+                    <button id="btn-mock-location" class="btn-secondary" aria-label="Use New Delhi">
+                        <i class="fa-solid fa-city"></i> Use Delhi (Mock)
+                    </button>
+                </div>
+                
+                <div class="filter-sort-controls">
+                    <div class="control-group">
+                        <label for="sort-select">Sort By</label>
+                        <select id="sort-select">
+                            <option value="distance">Nearest</option>
+                            <option value="price">Cheapest Price</option>
+                            <option value="wait_time">Shortest Wait Time</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="filter-select">Filter</label>
+                        <select id="filter-select">
+                            <option value="all">All Stations</option>
+                            <option value="available">Available Only</option>
+                            <option value="cheap">Cheapest (&le;₹114)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="map-layers-controls" style="margin-top: 1rem;">
+                    <label class="layer-toggle">
+                        <input type="checkbox" id="toggle-traffic">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label"><i class="fa-solid fa-car-side"></i> Show Traffic Layer</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="station-list-container">
+                <div id="loading-indicator" class="hidden">
+                    <div class="spinner"></div>
+                    <p>Finding stations...</p>
+                </div>
+                <!-- Stations will be populated here -->
+                <ul id="station-list" class="station-list"></ul>
+            </div>
+            
+            <footer class="sidebar-footer">
+                <p>Smart Fuel Station Finder &copy; 2026</p>
+            </footer>
+        </aside>
+
+        <!-- Main Map Area -->
+        <main class="map-view">
+            <div id="map"></div>
+            
+            <!-- Beautiful map overlay to hide the broken API key view -->
+            <div class="map-overlay">
+                <img src="{{ url_for('static', filename='img/map_bg.png') }}" class="map-placeholder-image" alt="Map Preview">
+            </div>
+            
+            <!-- Alert overlays on map -->
+            <div id="map-alert" class="map-alert hidden">
+                <p id="map-alert-text">Alert message here</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Station Details Modal Overlay -->
+    <div id="station-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h2 id="modal-station-name">Station Name</h2>
+                <button class="btn-close-modal" aria-label="Close" id="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </header>
+            <div class="modal-body">
+                <div class="modal-detail-row">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span id="modal-station-address">Address here</span>
+                </div>
+                <div class="modal-detail-row">
+                    <i class="fa-regular fa-clock"></i>
+                    <span id="modal-station-hours">Hours here</span>
+                </div>
+                <div class="modal-detail-row">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    <span id="modal-station-wait">Wait time here</span>
+                </div>
+                
+                <h3 class="modal-section-title">Prices</h3>
+                <div class="prices">
+                    <div class="price-item">
+                        <div class="price-type">Petrol</div>
+                        <div class="price-value" id="modal-price-petrol">₹0.00</div>
+                    </div>
+                    <div class="price-item">
+                        <div class="price-type">Diesel</div>
+                        <div class="price-value" id="modal-price-diesel">₹0.00</div>
+                    </div>
+                </div>
+
+                <h3 class="modal-section-title">Amenities</h3>
+                <div id="modal-amenities" class="amenities-container">
+                    <!-- amenities inserted via js -->
+                </div>
+                
+                <div class="modal-action-row">
+                    <button class="btn-primary" style="width: 100%; margin-top: 1.5rem;"><i class="fa-solid fa-route"></i> Get Directions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replace 'YOUR_API_KEY' with a real Google Maps API Key to see the map -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=places" defer></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
